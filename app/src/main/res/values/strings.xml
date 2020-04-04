@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">My Application</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="map_key" translatable="false"></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_underline"><u>Create New Account</u></string>
+    <string name="title_popup">You have successfully complated create account</string>
+
+</resources>

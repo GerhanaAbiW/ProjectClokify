@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="80dp"
+    tools:context=".Login"
+    android:background="@color/background">
+
+    <TextView
+        android:layout_centerHorizontal="true"
+        android:layout_width="200dp"
+        android:layout_height="30dp"
+        android:background="@drawable/Logo"
+        android:textSize="70px">
+
+    </TextView>
+
+    <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_above="@+id/btn_save">
+
+        <TextView
+            android:layout_marginLeft="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="E-mail"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold">
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/email_logo"/>
+
+            <EditText
+                android:id="@+id/email"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:text="Sign in"
+        android:backgroundTint="@color/btn"
+        android:background="@drawable/btn_round"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btn_save">
+    </Button>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="Create new account?"
+            android:layout_below="@id/btn_save"
+            android:layout_marginTop="-40dp"
+            android:textSize="15sp"
+            android:textColor="@android:color/white">
+        </TextView>
+
+
+
+</RelativeLayout>
