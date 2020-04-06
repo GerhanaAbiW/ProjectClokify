@@ -365,9 +365,9 @@ public class TimerFragment extends Fragment {
         location = maps.getText().toString();
 
         CreateActivity createActivity = ClocklifyService.create(CreateActivity.class);
-        createActivity.createActivity(start_time,activity,location).enqueue(new Callback<GetToken>() {
+        createActivity.createActivity(start_time,activity,location).enqueue(new Callback<ActivityModel>() {
             @Override
-            public void onResponse(Call<GetToken> call, Response<GetToken> response) {
+            public void onResponse(Call<ActivityModel> call, Response<ActivityModel> response) {
                 if (response.isSuccessful() && response.body() != null){
                     MillisecondTime = 0L;
                     StartTime = 0L;
@@ -379,8 +379,8 @@ public class TimerFragment extends Fragment {
                     MilliSeconds = 0;
 
                     textView.setText("00:00:00");
-                    String token = response.body().token;
-                    userDefault.setString(UserDefault.TOKEN_KEY, "Bearer "+token);
+                    //String token = response.body().token;
+                    //userDefault.setString(UserDefault.TOKEN_KEY, "Bearer "+token);
                     //Intent Ok = new Intent(context, TimerActivity.class);
                     //startActivity(Ok);
                 }else {
@@ -389,7 +389,7 @@ public class TimerFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<GetToken> call, Throwable t) {
+            public void onFailure(Call<ActivityModel> call, Throwable t) {
                 //loading.setVisibility(View.GONE);
                 if(!call.isCanceled()){
                     FailResponeHandler.handlerErrorRespone(context,t);
