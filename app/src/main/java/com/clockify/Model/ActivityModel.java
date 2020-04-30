@@ -9,7 +9,7 @@ public class ActivityModel{
     public int id;
     @SerializedName("user_id")
     public  int user_id;
-    @SerializedName("star_timer")
+    @SerializedName("start_timer")
     public String start_timer;
     @SerializedName("stop_timer")
     public String stop_timer;
@@ -21,6 +21,16 @@ public class ActivityModel{
     public String createdAt;
     @SerializedName("updatedAt")
     public String updatedAt;
+
+    public String getStopwatch() {
+        return stopwatch;
+    }
+
+    public void setStopwatch(String stopwatch) {
+        this.stopwatch = stopwatch;
+    }
+
+    String stopwatch;
 
     public String getCreatedAt() {
         return createdAt;
@@ -85,7 +95,4 @@ public class ActivityModel{
     }
 
 
-//    public int getType(){
-//        return Type_Content;
-//    }
 }

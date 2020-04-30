@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 public class MainActivity extends AppCompatActivity {
-private String token;
+    private String token;
 
 
     @Override
@@ -20,8 +20,8 @@ private String token;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (token != null){
-                    Intent intent = new Intent(MainActivity.this,TimerActivity.class);
+                if (token != null) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);

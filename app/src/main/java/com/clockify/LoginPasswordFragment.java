@@ -1,5 +1,6 @@
 package com.clockify;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,25 +27,26 @@ import retrofit2.Response;
 
 public class LoginPasswordFragment extends Fragment {
     EditText inputPassword;
-    Button  btnOk;
+    Button btnOk;
     TextView btnForgot;
     public ConstraintLayout loading;
     private Context passwordContext;
-    //private String userPassword ="ongthe";
     String password;
     private String email;
+    private ProgressDialog progress;
 
     private UserDefault userDefault = UserDefault.getInstance();
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_login_password, container, false) ;
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_login_password, container, false);
         passwordContext = rootView.getContext();
 
         initLayout(rootView);
 
-        if (getArguments() != null){
+        if (getArguments() != null) {
             email = getArguments().getString("email");
         }
 
@@ -52,52 +54,47 @@ public class LoginPasswordFragment extends Fragment {
         return rootView;
     }
 
-    private void initLayout(ViewGroup viewGroup){
+    private void initLayout(ViewGroup viewGroup) {
         inputPassword = viewGroup.findViewById(R.id.password);
         btnOk = viewGroup.findViewById(R.id.btn_ok);
         loading = viewGroup.findViewById(R.id.loading_pass);
     }
 
-    public  void apiLogin(){
-
+    public void apiLogin() {
         LoginSession loginSession = ClocklifyService.create(LoginSession.class);
-        loginSession.login(email,password).enqueue(new Callback<GetToken>() {
+        loginSession.login(email, password).enqueue(new Callback<GetToken>() {
             @Override
             public void onResponse(Call<GetToken> call, Response<GetToken> response) {
-                if (response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     String token = response.body().token;
-                    userDefault.setString(UserDefault.TOKEN_KEY, token);
+                    userDefault.setString(UserDefault.TOKEN_KEY, "Bearer " + token);
                     Intent Ok = new Intent(passwordContext, TimerActivity.class);
+                    Ok.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(Ok);
-                }else {
-                    FailResponeHandler.handleRespone(passwordContext,response.errorBody());
+                } else {
+                    FailResponeHandler.handleRespone(passwordContext, response.errorBody());
                 }
             }
 
             @Override
             public void onFailure(Call<GetToken> call, Throwable t) {
-                loading.setVisibility(View.GONE);
-                if(!call.isCanceled()){
-                    FailResponeHandler.handlerErrorRespone(passwordContext,t);
+                if (!call.isCanceled()) {
+                    FailResponeHandler.handlerErrorRespone(passwordContext, t);
                 }
 
             }
         });
     }
+
     private void loginPassword() {
-        ;
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //loading.setVisibility(View.VISIBLE);
-                password=inputPassword.getText().toString();
-                if (inputPassword.getText().toString().equals("")||inputPassword.getText().toString().trim().isEmpty()){
+                password = inputPassword.getText().toString();
+                if (inputPassword.getText().toString().equals("") || inputPassword.getText().toString().trim().isEmpty()) {
                     Toast.makeText(passwordContext, "Password harus diisi", Toast.LENGTH_LONG).show();
-
                 } else {
-
                     apiLogin();
-
                 }
             }
         });

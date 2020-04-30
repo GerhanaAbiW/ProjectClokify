@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.clockify"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -14,7 +14,7 @@ android {
     buildTypes {
 
         debug {
-            buildConfigField "String", "SERVER_URL", '"http://b81d2427.ngrok.io/restapi/"'
+            buildConfigField "String", "SERVER_URL", '"http://8d09da49.ngrok.io/restapi/"'
         }
 
         release {

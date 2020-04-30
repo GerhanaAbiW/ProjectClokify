@@ -18,7 +18,7 @@ public class HeaderInterceptor implements Interceptor {
 
         token = UserDefault.getInstance().getString(UserDefault.TOKEN_KEY);
         if (token != null)
-            builder.addHeader("token", token);
+            builder.addHeader("Authorization", token);
         return chain.proceed(builder.build());
     }
 }

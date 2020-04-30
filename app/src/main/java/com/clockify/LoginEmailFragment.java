@@ -87,6 +87,5 @@ public class LoginEmailFragment extends Fragment {
 
     public interface LoginEmailListener {
         void onButtonSignInClicked(String email);
-
     }
 }

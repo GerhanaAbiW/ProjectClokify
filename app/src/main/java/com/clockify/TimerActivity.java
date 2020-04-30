@@ -17,8 +17,9 @@ import java.util.ArrayList;
 
 
 public class TimerActivity extends AppCompatActivity {
-
     private FragmentManager fmanager = getSupportFragmentManager();
+    private TimerFragment timerFragment;
+    private ActivityFragment activityFragment;
     private ViewPager viewPager;
     private TabLayout tab;
     private ArrayList<Fragment> fragments = new ArrayList<>();
@@ -47,14 +48,13 @@ public class TimerActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-
-        fragments.add(newFragment1());
-        fragments.add(newFragment2());
+        timerFragment = newFragment1();
+        activityFragment = newFragment2();
+        fragments.add(timerFragment);
+        fragments.add(activityFragment);
         adapter = new ScreenSlidePagerAdapter(fmanager);
         viewPager.setAdapter(adapter);
         tab.setupWithViewPager(viewPager);
-
-
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {

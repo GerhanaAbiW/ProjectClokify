@@ -3,6 +3,7 @@ package com.clockify;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,8 +30,9 @@ public class RegisterActivity extends AppCompatActivity {
     Button btnCreate;
     Dialog epicDialog;
     ImageView close;
-    EditText inputName,inputEmail,inputPassword,inputConfirmPassword;
-    String name,email,password,cPass;
+    EditText inputName, inputEmail, inputPassword, inputConfirmPassword;
+    String name, email, password, cPass;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,51 +40,51 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         epicDialog = new Dialog(this);
-        btnCreate = findViewById(R.id.btn_create);
 
+        btnCreate = findViewById(R.id.btn_create);
         inputName = findViewById(R.id.name);
         inputEmail = findViewById(R.id.email);
         inputPassword = findViewById(R.id.Password);
         inputConfirmPassword = findViewById(R.id.ConfirmPassword);
+
         Validasi();
-
-
     }
 
-    public void apiSignUP(){
+    public void apiSignUP() {
+        progress = new ProgressDialog(this);
+        progress.setMessage("Loading...");
+        progress.setCancelable(false);
+        progress.show();
+
         SignUp signUp = ClocklifyService.create(SignUp.class);
-        signUp.createAcc(name,email,password).enqueue(new Callback<GetToken>() {
+        signUp.createAcc(name, email, password).enqueue(new Callback<EmptyResponse>() {
             @Override
-            public void onResponse(Call<GetToken> call, Response<GetToken> response) {
-                if (response.isSuccessful() && response.body() != null){
-                    //String token = response.body().token;
-                    //userDefault.setString(UserDefault.TOKEN_KEY, token);
-                    //Intent Ok = new Intent(RegisterActivity.this, LoginEmailFragment.class);
-                    //startActivity(Ok);
+            public void onResponse(Call<EmptyResponse> call, Response<EmptyResponse> response) {
+                progress.dismiss();
+                if (response.isSuccessful() && response.body() != null) {
                     ShowPopUp();
-                }else {
-                    FailResponeHandler.handleRespone(RegisterActivity.this,response.errorBody());
+                } else {
+                    FailResponeHandler.handleRespone(RegisterActivity.this, response.errorBody());
                 }
             }
 
             @Override
-            public void onFailure(Call<GetToken> call, Throwable t) {
-                //loading.setVisibility(View.GONE);
-                if(!call.isCanceled()){
-                    FailResponeHandler.handlerErrorRespone(RegisterActivity.this,t);
+            public void onFailure(Call<EmptyResponse> call, Throwable t) {
+                progress.dismiss();
+                if (!call.isCanceled()) {
+                    FailResponeHandler.handlerErrorRespone(RegisterActivity.this, t);
                 }
 
             }
         });
     }
 
-    public void Validasi(){
-
+    public void Validasi() {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 name = inputName.getText().toString();
-                email=inputEmail.getText().toString();
+                email = inputEmail.getText().toString();
                 cPass = inputConfirmPassword.getText().toString();
                 password = inputPassword.getText().toString();
 
@@ -90,18 +92,17 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "E-mail harus diisi", Toast.LENGTH_SHORT).show();
                 } else if (!isValidEmail(inputEmail.getText().toString())) {
                     Toast.makeText(RegisterActivity.this, "Masukan Format email dengan benar", Toast.LENGTH_SHORT).show();
-
-                }else if(inputPassword.getText().toString().equals("")){
+                } else if (inputPassword.getText().toString().equals("")) {
                     Toast.makeText(RegisterActivity.this, "Password harus diisi", Toast.LENGTH_LONG).show();
-
-                }else if(!inputPassword.getText().toString().equals(inputConfirmPassword.getText().toString())){
+                } else if (!inputPassword.getText().toString().equals(inputConfirmPassword.getText().toString())) {
                     Toast.makeText(RegisterActivity.this, "Password dan confirm password tidak valid", Toast.LENGTH_LONG).show();
-                }else {
+                } else {
                     apiSignUP();
                 }
             }
         });
     }
+
     public static boolean isValidEmail(CharSequence email) {
         if (TextUtils.isEmpty(email)) {
             return false;
@@ -109,24 +110,15 @@ public class RegisterActivity extends AppCompatActivity {
             return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    public void ShowPopUp(){
+    public void ShowPopUp() {
         epicDialog.setContentView(R.layout.activity_pop);
-        close=epicDialog.findViewById(R.id.closePopUp);
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(RegisterActivity.this,LoginActivity.class);
-                startActivity(i);
-                finish();
-            }
-        }, 5000);
+        close = epicDialog.findViewById(R.id.closePopUp);
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });

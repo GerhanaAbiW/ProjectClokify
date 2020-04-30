@@ -28,6 +28,7 @@
             android:background="@drawable/btn_round"
             android:backgroundTint="@android:color/white"
             android:drawableRight="@drawable/search"
+            android:imeOptions="actionSearch"
             android:inputType="textAutoComplete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/shortby"
@@ -59,8 +60,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_stopwatch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_short" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

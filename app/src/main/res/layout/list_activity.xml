@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_margin="12dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,7 +73,7 @@
                            android:layout_marginRight="5dp"
                            android:textColor="@android:color/white" />
                     <TextView
-                        android:id="@+id/endTimer"
+                        android:id="@+id/stopTimer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="time"

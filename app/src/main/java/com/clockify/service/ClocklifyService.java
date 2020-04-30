@@ -1,6 +1,8 @@
 package com.clockify.service;
 
 import com.clockify.BuildConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,6 +15,10 @@ public class ClocklifyService {
     public static Retrofit getRetrofit() {
         OkHttpClient.Builder httpBuilder = new OkHttpClient.Builder();
 
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         OkHttpClient client = httpBuilder
                 .addInterceptor(new HeaderInterceptor())
                 .addInterceptor(new ResponseInterceptor())
@@ -24,7 +30,7 @@ public class ClocklifyService {
 
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.SERVER_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
     }

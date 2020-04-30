@@ -1,6 +1,7 @@
 package com.clockify;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +26,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.clockify.Adapter.ActivityAdapter;
 import com.clockify.Model.ActivityModel;
 import com.clockify.Model.GetToken;
 import com.clockify.Model.Model;
@@ -36,6 +39,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,6 +56,7 @@ import static android.content.Context.LOCATION_SERVICE;
 
 public class TimerFragment extends Fragment {
     TextView textView, startTime, endTime, startDate, endDate;
+    ActivityAdapter adapter;
     LinearLayout stopReset, saveDelete;
     Button start, stop, reset, save, delete, maps;
     EditText Desc;
@@ -65,10 +70,14 @@ public class TimerFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private static final int REQUEST_LOCATION = 0;
-    String start_time,activity,location;
+    String start_timer, activity, location, stop_timer;
 
+    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+
+    private String date;
     private Context context;
-
     private UserDefault userDefault = UserDefault.getInstance();
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -85,10 +94,6 @@ public class TimerFragment extends Fragment {
         initLayout(rootView);
         timer();
 
-//        if (checkLocationPermission())
-//            getLocation();
-
-        //gmaps();
         return rootView;
     }
 
@@ -192,17 +197,9 @@ public class TimerFragment extends Fragment {
         //listView = viewGroup.findViewById(R.id.listview1);
         startTime = viewGroup.findViewById(R.id.start_time);
         endTime = viewGroup.findViewById(R.id.end_time);
-
-
     }
 
-
-    //SimpleDateFormat format = new SimpleDateFormat("HH:MM:SS");
-
-
     public void timer() {
-
-
         saveDelete.setVisibility(View.GONE);
         stopReset.setVisibility(View.GONE);
         start.setVisibility(View.VISIBLE);
@@ -228,19 +225,17 @@ public class TimerFragment extends Fragment {
                 int minutes = calender.get(Calendar.MINUTE);
                 int second = calender.get(Calendar.SECOND);
 
-
                 String currentDate = new SimpleDateFormat("dd MMM yy", Locale.getDefault()).format(new Date());
                 //String currentDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calender.getTime());
 
                 startTime.setText(String.format("%02d", hour) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", second));
                 startDate.setText("" + currentDate);
 
+                start_timer = format.format(new Date()) + " " + String.format("%02d", hour) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", second);
                 start.setVisibility(View.GONE);
                 saveDelete.setVisibility(View.GONE);
                 stopReset.setVisibility(View.VISIBLE);
                 reset.setEnabled(false);
-
-
             }
         });
 
@@ -265,7 +260,9 @@ public class TimerFragment extends Fragment {
                 endTime.setText(String.format("%02d", jam) + ":" + String.format("%02d", menit) + ":" + String.format("%02d", detik));
                 String currentDate = new SimpleDateFormat("dd MMM yy", Locale.getDefault()).format(new Date());
                 endDate.setText("" + currentDate);
-                reset.setEnabled(false);
+
+                stop_timer = format.format(new Date()) + " " + String.format("%02d", jam) + ":" + String.format("%02d", menit) + ":" + String.format("%02d", detik);
+                //reset.setEnabled(false);
             }
         });
 
@@ -293,36 +290,25 @@ public class TimerFragment extends Fragment {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 apiCreate();
-
-//                ActivityFragment activityFragment = new ActivityFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("start_time", startTime.getText().toString());
-//                bundle.putString("end_time", endTime.getText().toString());
-//                bundle.putString("start_date", startDate.getText().toString());
-//                bundle.putString("end_date", endDate.getText().toString());
-//                bundle.putString("stopwatch", textView.getText().toString());
-//                //newFragment.setArguments(bundle);
-////                bundle.putString(Desc);
-////                bundle.putString(maps);
-////                bundle.putString(textView);
-////                bundle.putString(startTime);
-////                bundle.putString(endTime.getText().toString());
-//
-////                ListElementsArrayList.add(textView.getText().toString());
-////                ListElementsArrayList.add(Desc.getText().toString());
-////                ListElementsArrayList.add(maps.getText().toString());
-////
-////
-////                adapter.notifyDataSetChanged();
-//
-//                activityFragment.setArguments(bundle);
-//                FragmentManager fragmentManager = getFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.page, activityFragment, ActivityFragment.class.getSimpleName());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
+                start.setVisibility(View.VISIBLE);
+                stopReset.setVisibility(View.GONE);
+                saveDelete.setVisibility(View.GONE);
+                MillisecondTime = 0L;
+                StartTime = 0L;
+                TimeBuff = 0L;
+                UpdateTime = 0L;
+                Seconds = 0;
+                Minutes = 0;
+                Hours = 0;
+                MilliSeconds = 0;
+                textView.setText("00:00:00");
+                startTime.setText("-");
+                endTime.setText("-");
+                startDate.setText("-");
+                endDate.setText("-");
+                Desc.setText("");
+                //location = maps.getText().toString();
 
             }
         });
@@ -359,40 +345,35 @@ public class TimerFragment extends Fragment {
         }
 
     };
-    public  void apiCreate(){
-        start_time = startTime.getText().toString();
+
+    public void apiCreate() {
         activity = Desc.getText().toString();
         location = maps.getText().toString();
+        Date newStartTime=null;
+        Date newEndTime= null;
+        try {
+            newStartTime = newFormat.parse(start_timer);
+            newEndTime = newFormat.parse(stop_timer);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         CreateActivity createActivity = ClocklifyService.create(CreateActivity.class);
-        createActivity.createActivity(start_time,activity,location).enqueue(new Callback<ActivityModel>() {
+        createActivity.createActivity(newStartTime, newEndTime, activity, location).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<ActivityModel> call, Response<ActivityModel> response) {
-                if (response.isSuccessful() && response.body() != null){
-                    MillisecondTime = 0L;
-                    StartTime = 0L;
-                    TimeBuff = 0L;
-                    UpdateTime = 0L;
-                    Seconds = 0;
-                    Minutes = 0;
-                    Hours = 0;
-                    MilliSeconds = 0;
-
-                    textView.setText("00:00:00");
-                    //String token = response.body().token;
-                    //userDefault.setString(UserDefault.TOKEN_KEY, "Bearer "+token);
-                    //Intent Ok = new Intent(context, TimerActivity.class);
-                    //startActivity(Ok);
-                }else {
-                    FailResponeHandler.handleRespone(context,response.errorBody());
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    //adapter.notifyDataSetChanged();
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                } else {
+                    FailResponeHandler.handleRespone(context, response.errorBody());
                 }
             }
 
             @Override
-            public void onFailure(Call<ActivityModel> call, Throwable t) {
-                //loading.setVisibility(View.GONE);
-                if(!call.isCanceled()){
-                    FailResponeHandler.handlerErrorRespone(context,t);
+            public void onFailure(Call<Void> call, Throwable t) {
+                if (!call.isCanceled()) {
+                    FailResponeHandler.handlerErrorRespone(context, t);
                 }
 
             }
