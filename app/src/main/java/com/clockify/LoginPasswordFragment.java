@@ -68,7 +68,7 @@ public class LoginPasswordFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     String token = response.body().token;
                     userDefault.setString(UserDefault.TOKEN_KEY, "Bearer " + token);
-                    Intent Ok = new Intent(passwordContext, TimerActivity.class);
+                    Intent Ok = new Intent(getActivity(), TimerActivity.class);
                     Ok.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(Ok);
                 } else {

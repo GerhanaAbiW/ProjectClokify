@@ -31,8 +31,13 @@ import com.clockify.service.DeleteActivity;
 import com.clockify.service.ShowActivity;
 import com.clockify.service.Update;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +56,9 @@ public class ActivityFragment extends Fragment {
     Swipe swipe;
     int id;
 
+    private SimpleDateFormat parser;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyy", Locale.getDefault());
+
     List<ActivityModel> timer = new ArrayList<>();
     private ProgressDialog progress;
 
@@ -66,9 +74,11 @@ public class ActivityFragment extends Fragment {
         return rootView;
     }
 
+
+
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         apiActivity();
     }
 
@@ -187,15 +197,34 @@ public class ActivityFragment extends Fragment {
                     timer = response.body();
                     List<ActivityModel> newList = new ArrayList<>();
                     for(ActivityModel model : timer){
-                        if(model.getCreatedAt().equalsIgnoreCase()){
-
-                        }else{
+                        if(newList.size()>0){
+                            if(newList.contains(model)){
+                             int index = newList.indexOf(model);
+                             ActivityModel newListModel = newList.get(index);
+                             String createdAt = dateFormat.format(stringDateFormatter(model.getCreatedAt()));
+                             String createdAt2 = dateFormat.format(stringDateFormatter(newListModel.getCreatedAt()));
+                                //String dtStart = "2010-10-15T09:27:37Z";
+                                SimpleDateFormat format = new SimpleDateFormat("dd mmm yyyy");
+                                try {
+                                    Date date = format.parse(createdAt);
+                                    Date date2 = format.parse(createdAt2);
+                                    if(date.compareTo(date2)>0){
+                                        newList.set(index,model);
+                                    }
+                                    //System.out.println(date);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                }
+                            }else {
                             newList.add(model);
+
                         }
+
                     }
                     adapter.notifyDataSetChanged();
                     if (timer != null) {
-                        adapter.updateAdapter(timer, "");
+                        adapter.updateAdapter(newList, "");
                         adapter.notifyDataSetChanged();
                     }
                 } else {
@@ -241,6 +270,21 @@ public class ActivityFragment extends Fragment {
             }
         });
     }
+
+    public Date stringDateFormatter(String dateString) {
+        Date date = null;
+        if (parser == null) {
+            parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        }
+        parser.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+        try {
+            date = parser.parse(dateString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
 
 
 }
