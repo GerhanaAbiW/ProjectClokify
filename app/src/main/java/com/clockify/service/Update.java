@@ -12,5 +12,5 @@ import retrofit2.http.Path;
 public interface Update {
     @FormUrlEncoded
     @PUT("timers/{id}")
-    Call<ActivityModel> updateUser(@Path("id") int id,@Field("activity") String activity, @Field("location") String location);
+    Call<Void> updateUser(@Path("id") int id,@Field("activity") String activity, @Field("location") String location);
 }

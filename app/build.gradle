@@ -14,7 +14,7 @@ android {
     buildTypes {
 
         debug {
-            buildConfigField "String", "SERVER_URL", '"http://07264eb4.ngrok.io/restapi/"'
+            buildConfigField "String", "SERVER_URL", '"http://0d203b82.ngrok.io/restapi/"'
         }
 
         release {

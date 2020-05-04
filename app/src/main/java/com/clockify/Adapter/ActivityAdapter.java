@@ -52,6 +52,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder> implemen
 
 
 
+
     public void updateAdapter(List<ActivityModel> itemList, String search) {
         this.itemList = itemList;
         this.search = search;
@@ -99,6 +100,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder> implemen
 
 
         holder.stopwatch.setText(itemList.get(position).getStopwatch());
+
         if(item.getStart_timer()==null){
             holder.startTimer.setText("");
 
@@ -125,12 +127,14 @@ public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder> implemen
                 String stop_timer = itemList.get(position).getStop_timer();
                 String location = itemList.get(position).getLocation();
                 String activity = itemList.get(position).getActivity();
+                Integer id = itemList.get(position).getId();
 
                 Intent intent = new Intent(context, UpdateActivity.class);
                 intent.putExtra("start_timer",start_timer);
                 intent.putExtra("stop_timer",stop_timer);
                 intent.putExtra("location",location);
                 intent.putExtra("activity",activity);
+                intent.putExtra("id",id);
                 context.startActivity(intent);
             }
         });

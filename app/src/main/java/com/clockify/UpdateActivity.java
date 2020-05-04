@@ -1,5 +1,6 @@
 package com.clockify;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.clockify.Adapter.ActivityAdapter;
 import com.clockify.Model.ActivityModel;
@@ -31,6 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UpdateActivity extends AppCompatActivity {
+    private Fragment activityFragment;
     ActivityAdapter adapter;
     TextView textView, startTime, endTime, startDate, endDate;
     LinearLayout  saveDelete;
@@ -44,8 +48,8 @@ public class UpdateActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyy", Locale.getDefault());
 
     String location, activity;
-
     int id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +75,17 @@ public class UpdateActivity extends AppCompatActivity {
         String stop = hourFormat.format(stringDateFormatter(intent.getStringExtra("stop_timer")));
         String stop_date = dateFormat.format(stringDateFormatter(intent.getStringExtra("stop_timer")));
 
-        String location = intent.getStringExtra("location");
-        String activity = intent.getStringExtra("activity");
+
+        String lokasi = intent.getStringExtra("location");
+        String aktivitas = intent.getStringExtra("activity");
+
 
         startTime.setText(start);
         endTime.setText(stop);
         startDate.setText(start_date);
         endDate.setText(stop_date);
-        maps.setText(location);
-        Desc.setText(activity);
+        maps.setText(lokasi);
+        Desc.setText(aktivitas);
         //startTime.setText();
 
 
@@ -98,6 +104,8 @@ public class UpdateActivity extends AppCompatActivity {
 
                 update.setVisibility(View.GONE);
                 saveDelete.setVisibility(View.VISIBLE);
+                maps.getEditableText();
+                Desc.getEditableText();
 
 
             }
@@ -140,27 +148,35 @@ public class UpdateActivity extends AppCompatActivity {
     }
     //ini api update
     public void apiUpdate() {
+        ProgressDialog progress = new ProgressDialog(UpdateActivity.this);
+        progress.setMessage("Loading...");
+        progress.setCancelable(false);
+        progress.show();
         activity = Desc.getText().toString();
         location = maps.getText().toString();
+        id = getIntent().getIntExtra("id",0);
 
-        adapter = new ActivityAdapter(UpdateActivity.this);
+        //adapter = new ActivityAdapter(UpdateActivity.this);
 
         //recyclerView.setAdapter(adapter);
 
         Update update = ClocklifyService.create(Update.class);
-        update.updateUser(id,activity, location).enqueue(new Callback<ActivityModel>() {
+        update.updateUser(id,activity, location).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<ActivityModel> call, Response<ActivityModel> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    timer = (List<ActivityModel>) response.body();
-                    adapter.notifyDataSetChanged();
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+
+                    //timer = (List<ActivityModel>) response.body();
+                    //adapter.notifyDataSetChanged();
+                    Intent intent = new Intent(UpdateActivity.this, ActivityFragment.class);
+                    startActivity(intent);
                 } else {
                     FailResponeHandler.handleRespone(UpdateActivity.this, response.errorBody());
                 }
             }
 
             @Override
-            public void onFailure(Call<ActivityModel> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 if (!call.isCanceled()) {
                     FailResponeHandler.handlerErrorRespone(UpdateActivity.this, t);
                 }

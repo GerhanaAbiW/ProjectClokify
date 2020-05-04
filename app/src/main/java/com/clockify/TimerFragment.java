@@ -75,7 +75,7 @@ public class TimerFragment extends Fragment {
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
-
+    private List<ActivityModel> listStopwatch = new ArrayList<>();
     private String date;
     private Context context;
     private UserDefault userDefault = UserDefault.getInstance();
@@ -262,7 +262,7 @@ public class TimerFragment extends Fragment {
                 endDate.setText("" + currentDate);
 
                 stop_timer = format.format(new Date()) + " " + String.format("%02d", jam) + ":" + String.format("%02d", menit) + ":" + String.format("%02d", detik);
-                //reset.setEnabled(false);
+
             }
         });
 

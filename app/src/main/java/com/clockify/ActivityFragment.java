@@ -195,36 +195,36 @@ public class ActivityFragment extends Fragment {
             public void onResponse(Call<List<ActivityModel>> call, Response<List<ActivityModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     timer = response.body();
-                    List<ActivityModel> newList = new ArrayList<>();
-                    for(ActivityModel model : timer){
-                        if(newList.size()>0){
-                            if(newList.contains(model)){
-                             int index = newList.indexOf(model);
-                             ActivityModel newListModel = newList.get(index);
-                             String createdAt = dateFormat.format(stringDateFormatter(model.getCreatedAt()));
-                             String createdAt2 = dateFormat.format(stringDateFormatter(newListModel.getCreatedAt()));
-                                //String dtStart = "2010-10-15T09:27:37Z";
-                                SimpleDateFormat format = new SimpleDateFormat("dd mmm yyyy");
-                                try {
-                                    Date date = format.parse(createdAt);
-                                    Date date2 = format.parse(createdAt2);
-                                    if(date.compareTo(date2)>0){
-                                        newList.set(index,model);
-                                    }
-                                    //System.out.println(date);
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                                }
-                            }else {
-                            newList.add(model);
-
-                        }
-
-                    }
+//                    List<ActivityModel> newList = new ArrayList<>();
+//                    for(ActivityModel model : timer){
+//                        if(newList.size()>0){
+//                            if(newList.contains(model)){
+//                             int index = newList.indexOf(model);
+//                             ActivityModel newListModel = newList.get(index);
+//                             String createdAt = dateFormat.format(stringDateFormatter(model.getCreatedAt()));
+//                             String createdAt2 = dateFormat.format(stringDateFormatter(newListModel.getCreatedAt()));
+//                                //String dtStart = "2010-10-15T09:27:37Z";
+//                                SimpleDateFormat format = new SimpleDateFormat("dd mmm yyyy");
+//                                try {
+//                                    Date date = format.parse(createdAt);
+//                                    Date date2 = format.parse(createdAt2);
+//                                    if(date.compareTo(date2)>0){
+//                                        newList.set(index,model);
+//                                    }
+//                                    //System.out.println(date);
+//                                } catch (ParseException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                }
+//                            }else {
+//                            newList.add(model);
+//
+//                        }
+//
+//                    }
                     adapter.notifyDataSetChanged();
                     if (timer != null) {
-                        adapter.updateAdapter(newList, "");
+                        adapter.updateAdapter(timer, "");
                         adapter.notifyDataSetChanged();
                     }
                 } else {
