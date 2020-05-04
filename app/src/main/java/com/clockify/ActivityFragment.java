@@ -235,8 +235,8 @@ public class ActivityFragment extends Fragment {
                     }
 
                     adapter.notifyDataSetChanged();
-                    if (timer != null) {
-                        adapter.updateAdapter(timer, "");
+                    if (newList.size() > 0) {
+                        adapter.updateAdapter(newList, "");
                         adapter.notifyDataSetChanged();
                     }
                 } else {
