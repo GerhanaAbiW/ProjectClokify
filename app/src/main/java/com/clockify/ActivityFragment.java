@@ -2,14 +2,8 @@ package com.clockify;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -21,15 +15,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.clockify.Adapter.ActivityAdapter;
 import com.clockify.Helper.MyButtonClickListener;
 import com.clockify.Helper.Swipe;
-//import com.clockify.Models.Item;
-import com.clockify.Adapter.ActivityAdapter;
 import com.clockify.Model.ActivityModel;
 import com.clockify.service.ClocklifyService;
 import com.clockify.service.DeleteActivity;
 import com.clockify.service.ShowActivity;
-import com.clockify.service.Update;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,8 +38,8 @@ import java.util.TimeZone;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
+//import com.clockify.Models.Item;
 
 
 public class ActivityFragment extends Fragment {
@@ -73,7 +69,6 @@ public class ActivityFragment extends Fragment {
         initEvent();
         return rootView;
     }
-
 
 
     @Override
@@ -113,7 +108,7 @@ public class ActivityFragment extends Fragment {
                                 Toast.makeText(context, "Delete click", Toast.LENGTH_SHORT);
                                 if (timer != null)
                                     id = timer.get(pos).getId();
-                                    apiDelete();
+                                apiDelete();
                             }
                         }));
                 buffer.add(new MyButton(context,
@@ -189,39 +184,56 @@ public class ActivityFragment extends Fragment {
 
     // ini apinya buat nampilin
     public void apiActivity() {
+
+        final SimpleDateFormat format = new SimpleDateFormat("dd mmm yyyy");
+
         ShowActivity showActivity = ClocklifyService.create(ShowActivity.class);
         showActivity.ActivityList().enqueue(new Callback<List<ActivityModel>>() {
             @Override
             public void onResponse(Call<List<ActivityModel>> call, Response<List<ActivityModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     timer = response.body();
-//                    List<ActivityModel> newList = new ArrayList<>();
-//                    for(ActivityModel model : timer){
-//                        if(newList.size()>0){
-//                            if(newList.contains(model)){
-//                             int index = newList.indexOf(model);
-//                             ActivityModel newListModel = newList.get(index);
-//                             String createdAt = dateFormat.format(stringDateFormatter(model.getCreatedAt()));
-//                             String createdAt2 = dateFormat.format(stringDateFormatter(newListModel.getCreatedAt()));
-//                                //String dtStart = "2010-10-15T09:27:37Z";
-//                                SimpleDateFormat format = new SimpleDateFormat("dd mmm yyyy");
-//                                try {
-//                                    Date date = format.parse(createdAt);
-//                                    Date date2 = format.parse(createdAt2);
-//                                    if(date.compareTo(date2)>0){
-//                                        newList.set(index,model);
-//                                    }
-//                                    //System.out.println(date);
-//                                } catch (ParseException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                }
-//                            }else {
-//                            newList.add(model);
-//
-//                        }
-//
-//                    }
+
+                    List<String> tempDate = new ArrayList<>();
+                    List<ActivityModel> newList = new ArrayList<>();
+
+                    String createdAt;
+                    Date date;
+
+                    for (int i=0; i< timer.size(); i++) {
+
+                        ActivityModel model = timer.get(i);
+
+                        date = stringDateFormatter(model.getCreatedAt());
+                        createdAt = dateFormat.format(date);
+
+                        if (tempDate.size() > 0) {
+
+                            if (tempDate.contains(createdAt)) {
+                                //String dtStart = "2010-10-15T09:27:37Z";
+
+                                int index = tempDate.indexOf(createdAt);
+                                ActivityModel newListModel = newList.get(index);
+
+                                Date date2 = stringDateFormatter(newListModel.getCreatedAt());
+
+                                if (date.compareTo(date2) > 0) {
+                                    newList.set(index, model);
+                                }
+
+                            }else {
+                                tempDate.add(createdAt);
+                                newList.add(model);
+                            }
+                        } else {
+
+                            tempDate.add(createdAt);
+                            newList.add(model);
+                        }
+
+
+                    }
+
                     adapter.notifyDataSetChanged();
                     if (timer != null) {
                         adapter.updateAdapter(timer, "");
@@ -285,6 +297,14 @@ public class ActivityFragment extends Fragment {
         return date;
     }
 
+    class TempDate{
+        public String date;
+        public int index;
 
+        public TempDate(String date, int index){
+            this.date = date;
+            this.index = index;
+        }
+    }
 
 }
