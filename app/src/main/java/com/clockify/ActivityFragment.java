@@ -2,8 +2,14 @@ package com.clockify;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -15,21 +21,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.clockify.Adapter.ActivityAdapter;
 import com.clockify.Helper.MyButtonClickListener;
 import com.clockify.Helper.Swipe;
+//import com.clockify.Models.Item;
+import com.clockify.Adapter.ActivityAdapter;
 import com.clockify.Model.ActivityModel;
 import com.clockify.service.ClocklifyService;
 import com.clockify.service.DeleteActivity;
 import com.clockify.service.ShowActivity;
+import com.clockify.service.Update;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -38,8 +44,8 @@ import java.util.TimeZone;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-//import com.clockify.Models.Item;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class ActivityFragment extends Fragment {
@@ -69,6 +75,7 @@ public class ActivityFragment extends Fragment {
         initEvent();
         return rootView;
     }
+
 
 
     @Override
@@ -108,7 +115,7 @@ public class ActivityFragment extends Fragment {
                                 Toast.makeText(context, "Delete click", Toast.LENGTH_SHORT);
                                 if (timer != null)
                                     id = timer.get(pos).getId();
-                                apiDelete();
+                                    apiDelete();
                             }
                         }));
                 buffer.add(new MyButton(context,
@@ -184,9 +191,6 @@ public class ActivityFragment extends Fragment {
 
     // ini apinya buat nampilin
     public void apiActivity() {
-
-        final SimpleDateFormat format = new SimpleDateFormat("dd mmm yyyy");
-
         ShowActivity showActivity = ClocklifyService.create(ShowActivity.class);
         showActivity.ActivityList().enqueue(new Callback<List<ActivityModel>>() {
             @Override
@@ -194,49 +198,10 @@ public class ActivityFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     timer = response.body();
 
-                    List<String> tempDate = new ArrayList<>();
-                    List<ActivityModel> newList = new ArrayList<>();
-
-                    String createdAt;
-                    Date date;
-
-                    for (int i=0; i< timer.size(); i++) {
-
-                        ActivityModel model = timer.get(i);
-
-                        date = stringDateFormatter(model.getCreatedAt());
-                        createdAt = dateFormat.format(date);
-
-                        if (tempDate.size() > 0) {
-
-                            if (tempDate.contains(createdAt)) {
-                                //String dtStart = "2010-10-15T09:27:37Z";
-
-                                int index = tempDate.indexOf(createdAt);
-                                ActivityModel newListModel = newList.get(index);
-
-                                Date date2 = stringDateFormatter(newListModel.getCreatedAt());
-
-                                if (date.compareTo(date2) > 0) {
-                                    newList.set(index, model);
-                                }
-
-                            }else {
-                                tempDate.add(createdAt);
-                                newList.add(model);
-                            }
-                        } else {
-
-                            tempDate.add(createdAt);
-                            newList.add(model);
-                        }
-
-
-                    }
-
                     adapter.notifyDataSetChanged();
-                    if (newList.size() > 0) {
-                        adapter.updateAdapter(newList, "");
+                    if (timer != null) {
+                        Collections.sort(timer,ActivityModel.tanggal);
+                        adapter.updateAdapter(timer, "");
                         adapter.notifyDataSetChanged();
                     }
                 } else {
@@ -283,28 +248,8 @@ public class ActivityFragment extends Fragment {
         });
     }
 
-    public Date stringDateFormatter(String dateString) {
-        Date date = null;
-        if (parser == null) {
-            parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        }
-        parser.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
-        try {
-            date = parser.parse(dateString);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
 
-    class TempDate{
-        public String date;
-        public int index;
 
-        public TempDate(String date, int index){
-            this.date = date;
-            this.index = index;
-        }
-    }
+
 
 }

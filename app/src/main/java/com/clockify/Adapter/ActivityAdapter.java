@@ -26,17 +26,16 @@ import com.clockify.service.Update;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder> implements Filterable {
+public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder>{
     Context context;
     List<ActivityModel> itemList;
-    List<DateModel> dateList;
-    List<ActivityModel> itemListFiltered;
-    LayoutInflater inflater;
     private SimpleDateFormat parser;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyy", Locale.getDefault());
     
@@ -86,19 +85,24 @@ public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder> implemen
                 holder.date.setVisibility(View.VISIBLE);
             }
         }
-
-//        for(int i=0; i<=position; i++){
-//            if(itemList.get(i).getCreatedAt().equalsIgnoreCase(itemList.get(i+1).createdAt)){
-//                holder.date.setVisibility(View.GONE);
-//            }else{
-//                holder.date.setVisibility(View.VISIBLE);
+//        Collections.sort(itemList, new Comparator<Date>(){
+//            public int compare(Date date1, Date date2){
+//                return date1.after(date2);
 //            }
-//        }
-        //Glide.with(context).load(itemList.get(position).getImage()).into(holder.cart_item_img);
+//        });
+
+
+
+           if(position>0){
+               if(itemList.get(position).createdAt.equalsIgnoreCase(itemList.get(position-1).createdAt)){
+                   holder.date.setVisibility(View.GONE);
+               }else{
+                   holder.date.setVisibility(View.VISIBLE);
+               }
+           }
+
 
         holder.date.setText(createdAt);
-
-
         holder.stopwatch.setText(itemList.get(position).getStopwatch());
 
         if(item.getStart_timer()==null){
@@ -165,40 +169,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<MyViewHolder> implemen
         return 0;
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
-                    itemListFiltered = itemList;
-                } else {
-                    List<ActivityModel> filteredList = new ArrayList<>();
-                    for (ActivityModel row : itemList) {
 
-                        if (row.getActivity().toLowerCase().contains(charString.toLowerCase()) || row.getLocation().contains(charSequence)) {
-                            filteredList.add(row);
-                        }
-                    }
-
-                    itemListFiltered = filteredList;
-                }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = itemListFiltered;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                itemListFiltered = (ArrayList<ActivityModel>) filterResults.values;
-
-                // refresh the list with filtered data
-                notifyDataSetChanged();
-            }
-        };
-    }
 
 
 }

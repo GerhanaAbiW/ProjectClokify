@@ -63,7 +63,7 @@ public class TimerFragment extends Fragment {
     long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L;
     Handler handler;
     int Hours, Seconds, Minutes, MilliSeconds;
-    ListView listView;
+
     private LocationManager locationManager;
     private double latitude;
     private double longitude;
@@ -75,16 +75,13 @@ public class TimerFragment extends Fragment {
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
-    private List<ActivityModel> listStopwatch = new ArrayList<>();
-    private String date;
-    private Context context;
-    private UserDefault userDefault = UserDefault.getInstance();
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private Context context;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_timer, container, false);
         context = rootView.getContext();
         locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
@@ -194,7 +191,6 @@ public class TimerFragment extends Fragment {
         saveDelete = viewGroup.findViewById(R.id.save_delete);
         startDate = viewGroup.findViewById(R.id.start_date);
         endDate = viewGroup.findViewById(R.id.end_date);
-        //listView = viewGroup.findViewById(R.id.listview1);
         startTime = viewGroup.findViewById(R.id.start_time);
         endTime = viewGroup.findViewById(R.id.end_time);
     }
@@ -226,7 +222,7 @@ public class TimerFragment extends Fragment {
                 int second = calender.get(Calendar.SECOND);
 
                 String currentDate = new SimpleDateFormat("dd MMM yy", Locale.getDefault()).format(new Date());
-                //String currentDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(calender.getTime());
+
 
                 startTime.setText(String.format("%02d", hour) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", second));
                 startDate.setText("" + currentDate);
@@ -280,10 +276,7 @@ public class TimerFragment extends Fragment {
                 MilliSeconds = 0;
 
                 textView.setText("00:00:00");
-//
-//                ListElementsArrayList.clear();
-//
-//                adapter.notifyDataSetChanged();
+
             }
         });
 
@@ -308,7 +301,7 @@ public class TimerFragment extends Fragment {
                 startDate.setText("-");
                 endDate.setText("-");
                 Desc.setText("");
-                //location = maps.getText().toString();
+
 
             }
         });

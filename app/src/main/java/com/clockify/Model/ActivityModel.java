@@ -3,8 +3,14 @@ package com.clockify.Model;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ActivityModel{
+
     @SerializedName("id")
     public int id;
     @SerializedName("user_id")
@@ -94,5 +100,27 @@ public class ActivityModel{
         this.location = location;
     }
 
+    public static Comparator<ActivityModel> tanggal = new Comparator<ActivityModel>() {
+        private SimpleDateFormat parser;
+        private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyy", Locale.getDefault());
+        public Date stringDateFormatter(String dateString) {
+            Date date = null;
+            if (parser == null) {
+                parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            }
+            parser.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+            try {
+                date = parser.parse(dateString);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return date;
+        }
+        @Override
+        public int compare(ActivityModel o1, ActivityModel o2) {
+            return dateFormat.format(stringDateFormatter(o1.getCreatedAt())).compareTo(dateFormat.format(stringDateFormatter(o2.getCreatedAt())));
+            //o1.getCreatedAt().compareTo(o2.getCreatedAt());
+        }
+    };
 
 }
